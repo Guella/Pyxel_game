@@ -11,6 +11,71 @@ sys.path.append("G:/Outros computadores/Meu computador/FURG/Algoritmos/Pyxel_gam
 import variaveis as var
 #from .variaveis import * as var
 
+MENU_COMBATE_I = [var.MENU_COMBATE_BORDA_Y + 10, var.MENU_COMBATE_BORDA_XI + 40]
+MENU_COMBATE_II = [MENU_COMBATE_I[0] + 20, MENU_COMBATE_I[1]]
+MENU_COMBATE_III = [MENU_COMBATE_I[0], MENU_COMBATE_I[1] + 50]
+MENU_COMBATE_IV = [MENU_COMBATE_I[0] + 20, MENU_COMBATE_I[1] + 50]
+
+
+ICONES = {
+    "floresta": [0,8,104, 8, 8, 0],
+    }
+
+
+MENU_LETRAS = {
+	"A": [2, 0, 5, 6, 7],
+	"B": [2, 12, 5, 6, 7],
+	"C": [2, 24, 5, 6, 7],
+	"D": [2, 36, 5, 6, 7],
+	"E": [2, 48, 5, 6, 7],
+	"F": [2, 60, 5, 6, 7],
+	"G": [2, 72, 5, 6, 7],
+	"H": [2, 84, 5, 6, 7],
+	"I": [2, 96, 5, 6, 7],
+	"J": [2, 108, 5, 6, 7],
+	"K": [2, 120, 5, 6, 7],
+	"L": [2, 132, 5, 6, 7],
+	"M": [2, 144, 5, 9, 7],
+	"N": [2, 0, 41, 6, 7],
+	"O": [2, 12, 41, 6, 7],
+	"P": [2, 24, 41, 6, 7],
+	"Q": [2, 36, 41, 6, 7],
+	"R": [2, 48, 41, 6, 7],
+	"S": [2, 60, 41, 6, 7],
+	"T": [2, 72, 41, 6, 7],
+	"U": [2, 84, 41, 6, 7],
+	"V": [2, 96, 41, 6, 7],
+	"W": [2, 108, 41, 9, 7],
+	"X": [2, 120, 41, 6, 7],
+	"Y": [2, 132, 41, 6, 7],
+	"Z": [2, 144, 41, 6, 7],
+	"a": [2, 0, 24, 8, 7],
+	"b": [2, 12, 24, 8, 7],
+	"c": [2, 24, 24, 6, 7],
+	"d": [2, 36, 24, 8, 7],
+	"e": [2, 48, 24, 8, 7],
+	"f": [2, 60, 24, 8, 7],
+	"g": [2, 72, 26, 8, 7],
+	"h": [2, 84, 24, 8, 7],
+	"i": [2, 96, 24, 5, 7],
+	"j": [2, 108, 24, 8, 7],
+	"k": [2, 120, 24, 8, 7],
+	"l": [2, 132, 24, 5, 7],
+	"m": [2, 144, 24, 8, 7],
+	"n": [2, 0, 59, 8, 7],
+	"o": [2, 12, 59, 8, 7],
+	"p": [2, 24, 59, 8, 7],
+	"q": [2, 36, 59, 8, 7],
+	"r": [2, 48, 59, 8, 7],
+	"s": [2, 60, 59, 8, 7],
+	"t": [2, 72, 59, 6, 7],
+	"u": [2, 84, 59, 8, 7],
+	"v": [2, 96, 59, 8, 7],
+	"w": [2, 108, 59, 8, 7],
+	"x": [2, 120, 59, 8, 7],
+	"y": [2, 132, 59, 8, 7],
+	"z": [2, 144, 59, 8, 7]
+}
 
 TITULO = "Gauderio's Gate"
 
@@ -20,9 +85,21 @@ pyxel.load("mygame.pyxres")
 class Cursor:
     pass
 
+def desenha_opcoes(menu_pos, texto):
+    pos_y = menu_pos[0]
+    pos_x = menu_pos[1]
+    for letra in texto:
+        pyxel.blt(pos_x, pos_y,MENU_LETRAS[letra][0], MENU_LETRAS[letra][1], 
+                     MENU_LETRAS[letra][2], MENU_LETRAS[letra][3], MENU_LETRAS[letra][4], 0)
+        pos_x += MENU_LETRAS[letra][3]
+    
 
 def desenha_menu():
     pyxel.rect(0, var.MENU_COMBATE_BORDA_Y, var.MENU_COMBATE_BORDA_XF, var.TELA_ALTURA, col = 1)
+    desenha_opcoes(MENU_COMBATE_I, "Atacar")
+    desenha_opcoes(MENU_COMBATE_II, "Skills")
+    desenha_opcoes(MENU_COMBATE_III, "Itens")
+    desenha_opcoes(MENU_COMBATE_IV, "Fugir")
 
 def define_iniciativa(lista_personagens):
     return sorted(lista_personagens, key = lambda personagem: personagem.iniciativa)        
@@ -98,7 +175,7 @@ class Player(Personagem):
             pyxel.circb(self.x + (self.w/2), self.y + (self.h/2), self.movimento * 5, 12)
     def delineate(self):
         if self.selected == True:
-            pyxel.rectb(self.x, self.y, self.w, self.h, 7)
+            pyxel.rectb(self.x, self.y - 1, self.w + 1, self.h + 2, 7)
     def update(self):
         draw_chacter(self.x, self.y)
         self.desenha_area_mov()
@@ -134,8 +211,8 @@ class Player(Personagem):
                 
                     
     
-p1 = Player("Dude", 150, 150, "Guerreiro")
-dragao = NPC("Dragao", 400, 150, "Dragao")
+p1 = Player("Dude", 120, 100, "Guerreiro")
+dragao = NPC("Dragao", 20, 100, "Dragao")
 
 personagens = [p1,dragao]
 ordem_turno = [p1,dragao]
@@ -147,7 +224,7 @@ def update():
 def draw_menu():
     pyxel.cls(0)
     pyxel.mouse(visible=True)
-    pyxel.bltm(var.TELA_LARGURA/3 + 83, var.TELA_ALTURA/3 + 10, 0, 0, 0, 340, 168)
+    pyxel.bltm(0, 0, 0, 0, 0, var.TELA_LARGURA, var.TELA_ALTURA)
     desenha_menu()
     dragao.update()    
     p1.delineate()

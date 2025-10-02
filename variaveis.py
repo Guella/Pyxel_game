@@ -7,6 +7,7 @@ Created on Sun Sep  7 12:29:07 2025
 
 import pandas as pd
 import numpy as np
+import json
 
 
 ##### atributos base
