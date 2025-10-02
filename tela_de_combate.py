@@ -6,8 +6,8 @@ Created on Fri Sep  5 17:53:14 2025
 """
 import pyxel
 import sys
-sys.path.append("C:/Users/salma/Documents/FURG/Algoritmos/Pyxel/")
-sys.path.append("G:/Outros computadores/Meu computador/FURG/Algoritmos/Pyxel")
+sys.path.append("C:/Users/salma/Documents/FURG/Algoritmos/Pyxel_game/")
+sys.path.append("G:/Outros computadores/Meu computador/FURG/Algoritmos/Pyxel_game")
 import variaveis as var
 #from .variaveis import * as var
 
