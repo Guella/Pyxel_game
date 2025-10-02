@@ -29,17 +29,16 @@ def define_iniciativa(lista_personagens):
     pass
         
 def ordem_combate(lista_personagens):
-    pyxel.blt(var.TURNO_X, var.TURNO_Y, 0, 0, 0, 8, 8, scale = 3)
+    pyxel.blt(var.TURNO_X, var.TURNO_Y, 0, 0, 0, 8, 8, colkey = 0)
     pyxel.blt(var.TURNO_X + 18, var.TURNO_Y, 0, var.MONSTRO_DESENHO["Dragao"][0], var.MONSTRO_DESENHO["Dragao"][1], var.MONSTRO_DESENHO["Dragao"][2],
-              var.MONSTRO_DESENHO["Dragao"][3], scale = 2)
+              var.MONSTRO_DESENHO["Dragao"][3], colkey = 0)
     pass
 
 def desenha_monstro(x,y,nome):
-    pyxel.blt(x, y, 0, var.MONSTRO_DESENHO[nome][0], var.MONSTRO_DESENHO[nome][1], var.MONSTRO_DESENHO[nome][2], var.MONSTRO_DESENHO[nome][3],
-              scale = var.MONSTRO_DESENHO[nome][4])
+    pyxel.blt(x, y, 0, var.MONSTRO_DESENHO[nome][0], var.MONSTRO_DESENHO[nome][1], var.MONSTRO_DESENHO[nome][2], var.MONSTRO_DESENHO[nome][3], colkey = 0)
 
 def draw_chacter(x,y):
-    pyxel.blt(x, y, 0, 0, 0, 8, 8, scale = 4)
+    pyxel.blt(x, y, 0, 0, 0, 8, 8, colkey = 0)
     pass
 
 class Spell:
@@ -96,15 +95,15 @@ class Player(Personagem):
         self.casting = False
     def desenha_area_mov(self):
         if self.selected == True and self.movimento > 0:
-            pyxel.circb(self.x - self.w * 2 + 2, self.y - self.h * 2 + 2, self.movimento * 20, 12)
+            pyxel.circb(self.x + (self.w/2), self.y + (self.h/2), self.movimento * 5, 12)
     def delineate(self):
         if self.selected == True:
-            pyxel.rectb(self.x - self.w * 2 + 2, self.y - self.h * 2 + 2, self.w * 4 + 4, self.h * 4 + 4, 7)
+            pyxel.rectb(self.x, self.y, self.w, self.h, 7)
     def update(self):
         draw_chacter(self.x, self.y)
         self.desenha_area_mov()
         if self.selected == True and self.movendo == False:
-            if not (pyxel.mouse_x in range(self.x - (self.h * 4 - 1) , self.x + (self.h * 4)) and pyxel.mouse_y in range(self.y - (self.w * 4 - 1), self.y + (self.w * 4))):
+            if not (pyxel.mouse_x in range(self.x - self.h , self.x + self.h) and pyxel.mouse_y in range(self.y - self.w, self.y + self.w)):
                 if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT) and self.selected == True:
                     self.movendo = True
                     self.newx = pyxel.mouse_x
@@ -131,7 +130,7 @@ class Player(Personagem):
                     magia.y = self.y
                     magia.casted = True
                     self.casting = True
-                    pyxel.blt(self.x + self.w*4, self.y, 0, 16, 32, 8, 8, scale = 4)
+                    pyxel.blt(self.x + self.w*4, self.y, 0, 16, 32, 8, 8, colkey = 0)
                 
                     
     
@@ -148,7 +147,7 @@ def update():
 def draw_menu():
     pyxel.cls(0)
     pyxel.mouse(visible=True)
-    pyxel.bltm(var.TELA_LARGURA/3 + 83, var.TELA_ALTURA/3 + 10, 0, 0, 0, 340, 168, scale= 4)
+    pyxel.bltm(var.TELA_LARGURA/3 + 83, var.TELA_ALTURA/3 + 10, 0, 0, 0, 340, 168)
     desenha_menu()
     dragao.update()    
     p1.delineate()
@@ -159,7 +158,7 @@ def draw_menu():
     #
     if pyxel.btn(pyxel.MOUSE_BUTTON_RIGHT) and p1.selected == True:
         p1.selected = False
-    if pyxel.mouse_x in range(p1.x - (p1.h * 4 - 1) , p1.x + (p1.h * 4)) and pyxel.mouse_y in range(p1.y - (p1.w * 4 - 1), p1.y + (p1.w * 4)):
+    if pyxel.mouse_x in range(p1.x - p1.h + 1 , p1.x + p1.h - 1) and pyxel.mouse_y in range(p1.y - p1.w + 1, p1.y + p1.w - 1):
         if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT) and p1.selected == False:
             p1.selected = True
             

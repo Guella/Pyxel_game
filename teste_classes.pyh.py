@@ -37,7 +37,6 @@ class Player:
         self.newx = x
         self.newy = y
         self.iniciativa = iniciativa
-        self.movendo = False
         self.ehturno = False
         self.classe = classe
         self.selected = False
@@ -57,7 +56,6 @@ class Npc:
         self.newx = x
         self.newy = y
         self.iniciativa = iniciativa
-        self.movendo = False
         self.ehturno = False
         self.movimento = 8
         self.casting = False
