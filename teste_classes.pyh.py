@@ -5,12 +5,12 @@ Created on Fri Sep  5 17:53:14 2025
 @author: salma
 """
 import pyxel
-import sys
-sys.path.append("C:/Users/salma/Documents/FURG/Algoritmos/Pyxel_game/")
-sys.path.append("G:/Outros computadores/Meu computador/FURG/Algoritmos/Pyxel_game")
+# import sys
+# sys.path.append("C:/Users/salma/Documents/FURG/Algoritmos/Pyxel_game/")
+# sys.path.append("G:/Outros computadores/Meu computador/FURG/Algoritmos/Pyxel_game")
 import variaveis as var
 
-PER = []
+#PER = []
 MON = []
 
 TELA_LARGURA = 160
@@ -100,20 +100,27 @@ MENU_LETRAS = {
 	"z": [144, 59, 8, 9]
 }
 
+MONSTROS = {
+    "Rato": [0, 131, 17, 10, 12, TRANSPARENTE],
+    "Goblin": [0, 131, 36, 9, 11, TRANSPARENTE],
+    "Bezouro": [0, 129, 81 , 13, 13, TRANSPARENTE],
+    "Dragao": [0, 192, 128, 16, 16, TRANSPARENTE]
+    }
 
 
-def update_entities(entities):
-    for entity in entities:
-        entity.update()
+
+def update_monstros(monstros):
+    for monstro in monstros:
+        monstros.update()
         
-def draw_entities(entities):
-    for entity in entities:
-        entity.draw()
+def desenha_monstros(monstros):
+    for monstro in monstros:
+        monstros.draw()
         
-def cleanup_entities(entities):
-    for i in range(len(entities) - 1, -1, -1):
-        if not entities[i].is_alive:
-            del entities[i]
+def cleanup_monstros(monstros):
+    for i in range(len(monstros) - 1, -1, -1):
+        if not monstros[i].is_alive:
+            del monstros[i]
 
 def desenha_letras(pos_texto, texto, fig_id, escala = 1):
     pos_y = pos_texto[0]
@@ -128,13 +135,12 @@ def desenha_letras(pos_texto, texto, fig_id, escala = 1):
 
             
 class Character:
-    def __init__(self, nome, x, y, w, h, iniciativa):
+    def __init__(self, nome, x, y, iniciativa):
         self.nome = nome
         self.x = x
         self.y = y
-        self.h = h
-        self.w = w
         self.ehturno = False
+        self.is_alive = True
     def update(self):
         pass
     def attack(self):
@@ -143,24 +149,35 @@ class Character:
             
 class Player(Character):
     def __init__(self, nome, x, y, classe, iniciativa, w = var.CHARACTER_W, h = var.CHARACTER_H):
-        super().__init__(nome, x, y, w, h, iniciativa)
+        super().__init__(nome, x, y, iniciativa)
         self.nome = nome
         self.classe = classe
+        self.w = w
+        self.h = h
         self.ehturno = False
-        PER.append(self)
+        self.is_alive = True
+        #PER.append(self)
     def update(self):
         pass
     def draw(self):
         pyxel.blt(self.x, self.y, 0, 0, 0, self.w, self.h, colkey = TRANSPARENTE, scale = 2)
 
 class Npc(Character):
-    def __init__(self, nome, x, y, classe, iniciativa, w, h):
-        super().__init__(nome, x, y, w, h, iniciativa)
+    def __init__(self, nome, x, y, iniciativa):
+        super().__init__(nome, x, y, iniciativa)
         self.nome = nome
-        self.newx = x
-        self.newy = y
+        self.img = MONSTROS[nome][0]
+        self.u = MONSTROS[nome][1]
+        self.v = MONSTROS[nome][2]
+        self.w = MONSTROS[nome][3]
+        self.h = MONSTROS[nome][4]
+        self.iniciativa = iniciativa
         self.ehturno = False
+        self.is_alive = True
         MON.append(self)
+        
+    def draw(self):
+        pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, TRANSPARENTE, scale=2)
 
 class Menu_combate:
     def __init__(self):
@@ -201,6 +218,7 @@ class Jogo:
         self.scene = TELA_MENU
         #self.background = Background()
         self.player = Player("Bozo", 120, 80, "Guerreiro", 0)
+        self.monstro = Npc("Dragao", 30, 80, 10)
         self.menu_combate = Menu_combate()
         pyxel.mouse(True)
         pyxel.load("mygame.pyxres")
@@ -210,11 +228,10 @@ class Jogo:
         pyxel.cls(0)
         if self.scene == TELA_MENU:
             self.desenha_menu()
-            self.delinea()
         # elif self.scene == TELA_MUNDO:
         #     self.update_mundo()
         elif self.scene == TELA_COMBATE:
-            self.update_combate()
+            self.desenha_combate()
     
     def update(self):
         #self.background.update()
@@ -229,6 +246,7 @@ class Jogo:
         desenha_letras(MENU_INICIAL_TITULO, "Gauderios Fantasy", 1)
         desenha_letras(MENU_INICIAL_NOVOJG, "Novo Jogo", 1)
         desenha_letras(MENU_INICIAL_SAIR, "Sair", 1)
+        self.delinea()
     def delinea(self):
         if pyxel.mouse_x in RANGE_NOVOJGX and pyxel.mouse_y in RANGE_NOVOJGY:
             pyxel.rectb(MENU_INICIAL_NOVOJG[1] - 2, MENU_INICIAL_NOVOJG[0] - 2,
@@ -241,14 +259,19 @@ class Jogo:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_RETURN):
                 pyxel.quit()
                 
-       
-
-    def update_menu(self):
-        self.delinea()
-    
-    def update_combate(self):        
+    def desenha_combate(self):             
         self.player.draw()
+        self.monstro.draw()
         self.menu_combate.desenha()
+        
+    def update_menu(self):
+        pass
+        #self.desenha_menu()
+        
+    
+    def update_combate(self):   
+        pass
+        #self.menu_combate.desenha()
         #pyxel.quit()
         
     def update_mundo(self):
