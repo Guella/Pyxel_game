@@ -233,12 +233,12 @@ class Jogo:
         if pyxel.mouse_x in RANGE_NOVOJGX and pyxel.mouse_y in RANGE_NOVOJGY:
             pyxel.rectb(MENU_INICIAL_NOVOJG[1] - 2, MENU_INICIAL_NOVOJG[0] - 2,
                         TAMANHO_NOVOJG[0], TAMANHO_NOVOJG[1], 7)
-            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_RETURN):
                 self.scene = TELA_COMBATE
         elif pyxel.mouse_x in RANGE_SAIRX and pyxel.mouse_y in RANGE_SAIRY:
             pyxel.rectb(MENU_INICIAL_SAIR[1] - 2, MENU_INICIAL_SAIR[0] - 2, 
                         TAMANHO_SAIR[0], TAMANHO_SAIR[1], 7)
-            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_RETURN):
                 pyxel.quit()
                 
        
