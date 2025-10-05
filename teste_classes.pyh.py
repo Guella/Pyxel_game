@@ -12,12 +12,14 @@ import variaveis as var
 
 #PER = []
 MON = []
+TURNO = []
 
 TELA_LARGURA = 160
 TELA_ALTURA = 220
 TELA_MENU = 0
 TELA_MUNDO = 1
 TELA_COMBATE = 2
+TELA_MORTE = 3
 TRANSPARENTE = 0
 
 FASE_COMBATE = [0]
@@ -27,10 +29,10 @@ MENU_POS_X = TELA_LARGURA - 110
 TITULO_POS_Y = 20
 TITULO_POS_X = TELA_LARGURA - 140
 
-MENU_COMBATE_I = [var.MENU_COMBATE_BORDA_Y + 8, var.MENU_COMBATE_BORDA_XI + 30]
-MENU_COMBATE_II = [MENU_COMBATE_I[0] + 15, MENU_COMBATE_I[1]]
-MENU_COMBATE_III = [MENU_COMBATE_I[0], MENU_COMBATE_I[1] + 60]
-MENU_COMBATE_IV = [MENU_COMBATE_I[0] + 15, MENU_COMBATE_I[1] + 60]
+MENU_COMBATE_I = [var.MENU_COMBATE_BORDA_Y + 8, var.MENU_COMBATE_BORDA_XI + 30] # esquerda cima
+MENU_COMBATE_II = [MENU_COMBATE_I[0] + 15, MENU_COMBATE_I[1]] # esquerda baixo
+MENU_COMBATE_III = [MENU_COMBATE_I[0], MENU_COMBATE_I[1] + 60] # direita cima
+MENU_COMBATE_IV = [MENU_COMBATE_I[0] + 15, MENU_COMBATE_I[1] + 60] # direita baixo
 
 MENU_INICIAL_TITULO = [TITULO_POS_Y, TITULO_POS_X]
 MENU_INICIAL_NOVOJG = [MENU_POS_Y, MENU_POS_X]
@@ -72,7 +74,7 @@ MENU_LETRAS = {
 	"X": [120, 41, 6, 9],
 	"Y": [132, 41, 6, 9],
 	"Z": [144, 41, 6, 9],
-	"a": [0, 24, 8, 6],
+	"a": [0, 24, 8, 7],
 	"b": [12, 24, 8, 9],
 	"c": [24, 24, 6, 9],
 	"d": [36, 24, 8, 10],
@@ -97,8 +99,25 @@ MENU_LETRAS = {
 	"w": [108, 59, 8, 9],
 	"x": [120, 59, 8, 9],
 	"y": [132, 59, 8, 9],
-	"z": [144, 59, 8, 9]
+	"z": [144, 59, 8, 9],
+    ":": [12, 203, 4, 9],
+    "1": [0, 149, 6, 8],
+    "2": [12, 149, 6, 8],
+    "3": [24, 149, 6, 8],
+    "4": [36, 149, 6, 8],
+    "5": [48, 149, 6, 8],
+    "6": [60, 149, 6, 8],
+    "7": [72, 149, 6, 8],
+    "8": [84, 149, 6, 8],
+    "9": [96, 149, 6, 8],
+    "0": [108, 149, 6, 8],
+    "é": [72, 93, 6, 11],
+    ".": [12, 186, 4, 7],
+    "!": [0, 167, 4, 7],
+    "-": [120, 168, 7, 5]
 }
+
+SETA = [2, 48, 202 ,7, 9]
 
 MONSTROS = {
     "Rato": [0, 131, 17, 10, 12, TRANSPARENTE],
@@ -107,6 +126,59 @@ MONSTROS = {
     "Dragao": [0, 192, 128, 16, 16, TRANSPARENTE]
     }
 
+MONSTROS_STATS = {
+    "Dragao": {"For": 10,
+               "Int": 20,
+               "Con": 30,
+               "Dex": 20
+              },
+    "Rato": 
+        {
+            "For": 3,
+            "Int": 1,
+            "Con": 1,
+            "Dex": 6
+        }
+    }
+
+PLAYER_STATS = {
+    "For": 10,
+    "Int": 2,
+    "Con": 15,
+    "Dex": 10
+    }
+
+HABILIDADES = {
+    "Fogo": { 
+        "tipo": "elemental",
+        "dano": 100,
+        "atributo": "Int"
+        },
+    "Estocada": {
+        "tipo": "fisico",
+        "dano": 30,
+        "atributo": "For"
+        },
+    }
+
+ANIMACAO_HABS = {
+    "Fogo": {
+        "1": [0, 112, 72, 16, 16, TRANSPARENTE],
+        "2": [0, 96, 72, 16, 16, TRANSPARENTE],
+        "3": [0, 80, 72, 16, 16, TRANSPARENTE]
+        },
+    "Estocada":
+        {
+        "1": [0, 40, 0, -16, 8, TRANSPARENTE],
+        "2": [0, 0, 168, -16, 8, TRANSPARENTE],
+        "3": [0, 0, 176, -16, 8, TRANSPARENTE]
+        }
+    }
+
+ANIMACAO_PARADO = {
+    "1": [0, 0, 0, 8, 8, TRANSPARENTE], 
+    "2": [0, 8, 0, 8, 8, TRANSPARENTE]
+    }
 
 
 def update_monstros(monstros):
@@ -132,6 +204,95 @@ def desenha_letras(pos_texto, texto, fig_id, escala = 1):
             pyxel.blt(pos_x, pos_y,fig_id, MENU_LETRAS[letra][0], 
                          MENU_LETRAS[letra][1], MENU_LETRAS[letra][2], MENU_LETRAS[letra][3], 0, scale = escala)
             pos_x += MENU_LETRAS[letra][2]
+            
+            
+class Temporizador:
+    def __init__(self):
+        self.framefinal = 0
+        self.ativo = False
+        
+    def inicia(self, frames):
+        self.framefinal = pyxel.frame_count + frames
+        self.ativo = True
+    
+    def acabou(self):
+        if not self.ativo:
+            return True
+        if pyxel.frame_count >= self.framefinal:
+            self.ativo = False
+        return not self.ativo
+    def atual(self):
+        return self.framefinal - pyxel.frame_count
+
+class Habilidade:
+    def __init__(self, nome):
+        self.nome = nome
+        self.tipo = HABILIDADES[nome]["tipo"]
+        self.dano = HABILIDADES[nome]["dano"]
+        self.atributo = HABILIDADES[nome]["atributo"]
+        self.animacao = ANIMACAO_HABS[nome]
+    
+    def draw_animacao(self, fase, target):
+        pyxel.blt(target.x, target.y, self.animacao[fase][0], self.animacao[fase][1], self.animacao[fase][2], 
+                  self.animacao[fase][3], self.animacao[fase][4], self.animacao[fase][5], scale=1.5)
+    
+    def draw_skill(self, timer, target):
+        if timer <= 9 or (timer > 22 and timer <= 27):
+            self.draw_animacao("1", target)
+        elif (timer > 9 and timer <= 13)  or (timer > 17 and timer <= 22):
+            self.draw_animacao("2", target)
+        elif timer > 13 and timer <= 17:
+            self.draw_animacao("3", target)
+        
+        
+class Seta:
+    def __init__(self):
+        self.x = MENU_COMBATE_I[1] - 10
+        self.y = MENU_COMBATE_I[0]
+        self.blt = [2, 48, 202 ,7, 10]
+        self.pos = 0
+    
+    def update(self):
+        self.move_seta()
+    def draw(self):
+        pyxel.blt(self.x, self.y, self.blt[0], self.blt[1], self.blt[2], self.blt[3], self.blt[4], colkey= TRANSPARENTE)
+    def move_seta(self):
+        if pyxel.btn(pyxel.KEY_UP):
+            if self.pos == 2:
+                self.pos = 0
+                self.x = MENU_COMBATE_I[1] - 10
+                self.y = MENU_COMBATE_I[0]
+            elif self.pos == 3:
+                self.pos = 1
+                self.x = MENU_COMBATE_III[1] - 10
+                self.y = MENU_COMBATE_III[0]
+        elif pyxel.btn(pyxel.KEY_DOWN):
+            if self.pos == 0:
+                self.pos = 2
+                self.x = MENU_COMBATE_II[1] - 10
+                self.y = MENU_COMBATE_II[0]
+            elif self.pos == 1:
+                self.pos = 3
+                self.x = MENU_COMBATE_IV[1] - 10
+                self.y = MENU_COMBATE_IV[0]
+        elif pyxel.btn(pyxel.KEY_LEFT):
+            if self.pos == 1:
+                self.pos = 0
+                self.x = MENU_COMBATE_I[1] - 10
+                self.y = MENU_COMBATE_I[0]
+            elif self.pos == 3:
+                self.pos = 2
+                self.x = MENU_COMBATE_II[1] - 10
+                self.y = MENU_COMBATE_II[0]
+        elif pyxel.btn(pyxel.KEY_RIGHT):
+            if self.pos == 0:
+                self.pos = 1
+                self.x = MENU_COMBATE_III[1] - 10
+                self.y = MENU_COMBATE_III[0]
+            elif self.pos == 2:
+                self.pos = 3
+                self.x = MENU_COMBATE_IV[1] - 10
+                self.y = MENU_COMBATE_IV[0]
 
             
 class Character:
@@ -141,43 +302,57 @@ class Character:
         self.y = y
         self.ehturno = False
         self.is_alive = True
+        self.maxlife = 100
+        self.atributos = PLAYER_STATS
+        self.iniciativa = 1
     def update(self):
+        if self.currentlife <= 0:
+            self.is_alive = False
+    def attack(self, skill, alvo):
+        alvo.currentlife -= (skill.dano + (self.atributos[skill.atributo] * skill.dano)/10)
         pass
-    def attack(self):
-        pass
-    
+        
             
 class Player(Character):
     def __init__(self, nome, x, y, classe, iniciativa, w = var.CHARACTER_W, h = var.CHARACTER_H):
         super().__init__(nome, x, y, iniciativa)
-        self.nome = nome
         self.classe = classe
         self.w = w
         self.h = h
-        self.ehturno = False
-        self.is_alive = True
-        #PER.append(self)
-    def update(self):
+        self.atributos = PLAYER_STATS
+        self.maxlife *= self.atributos["Con"]
+        self.currentlife = self.maxlife
+        self.contador = 0
+        #PER.append(self)    
         pass
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, 0, 0, self.w, self.h, colkey = TRANSPARENTE, scale = 2)
-
+        if self.is_alive == True:
+            if self.contador <= 5:
+                pyxel.blt(self.x, self.y, 0, 0, 0, self.w, self.h, colkey = TRANSPARENTE, scale = 1.5)
+                self.contador += 1
+            elif self.contador < 10:
+                pyxel.blt(self.x, self.y, 0, 8, 0, self.w, self.h, colkey = TRANSPARENTE, scale = 1.5)
+                self.contador += 1
+            elif self.contador >= 10:
+                pyxel.blt(self.x, self.y, 0, 8, 0, self.w, self.h, colkey = TRANSPARENTE, scale = 1.5)
+                self.contador = 0
+        if self.is_alive == False:
+            pyxel.blt(self.x, self.y, 0, 0, 0, self.w, self.h, colkey = TRANSPARENTE, scale = 1.5, rotate = 0.5)
+            
 class Npc(Character):
     def __init__(self, nome, x, y, iniciativa):
         super().__init__(nome, x, y, iniciativa)
-        self.nome = nome
         self.img = MONSTROS[nome][0]
         self.u = MONSTROS[nome][1]
         self.v = MONSTROS[nome][2]
         self.w = MONSTROS[nome][3]
         self.h = MONSTROS[nome][4]
-        self.iniciativa = iniciativa
-        self.ehturno = False
-        self.is_alive = True
+        self.maxlife *= MONSTROS_STATS[nome]["Con"]
+        self.currentlife = self.maxlife
         MON.append(self)
         
     def draw(self):
-        pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, TRANSPARENTE, scale=2)
+        pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, TRANSPARENTE, scale=1.5)
 
 class Menu_combate:
     def __init__(self):
@@ -189,8 +364,9 @@ class Menu_combate:
     def update(self):
         pass
     
-    def desenha(self):
+    def draw(self):
         pyxel.bltm(x=0,y=var.MENU_COMBATE_BORDA_Y,tm=0,u=0,v=192,w=160,h=80)
+        
         if self.indice == 0:
             self.desenha_MP()
         elif self.indice == 1:
@@ -206,7 +382,8 @@ class Menu_combate:
         desenha_letras(MENU_COMBATE_III, "Itens", 2)
         desenha_letras(MENU_COMBATE_IV, "Fugir", 2)
     def desenha_MS(self):
-        desenha_letras(MENU_COMBATE_I, "Bola de Fogo", 2)
+        desenha_letras(MENU_COMBATE_I, "Fogo", 2)
+        desenha_letras(MENU_COMBATE_IV, "Estocada", 2)
         if pyxel.btnp(pyxel.KEY_ESCAPE):
             self.indice = 0
         pass
@@ -220,6 +397,10 @@ class Jogo:
         self.player = Player("Bozo", 120, 80, "Guerreiro", 0)
         self.monstro = Npc("Dragao", 30, 80, 10)
         self.menu_combate = Menu_combate()
+        self.seta = Seta()
+        self.combate_fase = 0
+        self.timer = Temporizador()
+        self.atacando = False
         pyxel.mouse(True)
         pyxel.load("mygame.pyxres")
         pyxel.run(self.update, self.draw)
@@ -232,51 +413,183 @@ class Jogo:
         #     self.update_mundo()
         elif self.scene == TELA_COMBATE:
             self.desenha_combate()
-    
+        elif self.scene == TELA_MORTE:
+            self.desenha_tela_morte()
+             
     def update(self):
         #self.background.update()
         if self.scene == TELA_MENU:
+            self.seta = Seta()
+            self.player.is_alive = True
             self.update_menu()
         elif self.scene == TELA_MUNDO:
             self.update_mundo()
         elif self.scene == TELA_COMBATE:
             self.update_combate()
+        elif self.scene == TELA_MORTE:
+            self.update_tela_morte()
+    
+    
+    def reset(self):
+        self.player = Player("Bozo", 120, 80, "Guerreiro", 0)
+        self.player.ehturno = False
+        self.monstro = Npc("Rato", 30, 80, 10)
+        self.monstro.ehturno = False
+        self.menu_combate = Menu_combate()
+        self.seta = Seta()
+        self.combate_fase = 0
+        self.timer = Temporizador()
+        self.atacando = False
     
     def desenha_menu(self):
         desenha_letras(MENU_INICIAL_TITULO, "Gauderios Fantasy", 1)
         desenha_letras(MENU_INICIAL_NOVOJG, "Novo Jogo", 1)
         desenha_letras(MENU_INICIAL_SAIR, "Sair", 1)
         self.delinea()
+    
     def delinea(self):
         if pyxel.mouse_x in RANGE_NOVOJGX and pyxel.mouse_y in RANGE_NOVOJGY:
             pyxel.rectb(MENU_INICIAL_NOVOJG[1] - 2, MENU_INICIAL_NOVOJG[0] - 2,
                         TAMANHO_NOVOJG[0], TAMANHO_NOVOJG[1], 7)
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_RETURN):
+                self.reset()
                 self.scene = TELA_COMBATE
         elif pyxel.mouse_x in RANGE_SAIRX and pyxel.mouse_y in RANGE_SAIRY:
             pyxel.rectb(MENU_INICIAL_SAIR[1] - 2, MENU_INICIAL_SAIR[0] - 2, 
                         TAMANHO_SAIR[0], TAMANHO_SAIR[1], 7)
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_RETURN):
                 pyxel.quit()
-                
+    
+    
+            
     def desenha_combate(self):             
-        self.player.draw()
+        if self.player.ehturno == False or self.timer.atual() <= 0:
+            self.player.draw()
         self.monstro.draw()
-        self.menu_combate.desenha()
+        self.menu_combate.draw()
+        #desenha_letras([10,0], str(pyxel.frame_count), 2)
+        desenha_letras([20,0], "A Vida do Jogador é: " + str(self.player.currentlife), 2)
+        desenha_letras([30,0], "A Vida do Monstro é: " + str(self.monstro.currentlife), 2)
+        desenha_letras([40,0], "Turno: " + str(TURNO[0]), 2)
+        #desenha_letras([20,0], str(self.timer.ativo), 2)
         
+        #desenha_letras([10,0], str(self.timer.framefinal) + "   " + str(pyxel.frame_count) + str(self.timer.acabou()) + str(TURNO[0]) + str(self.player.currentlife), 2)
+        if self.player.ehturno == True:
+            self.seta.draw()
+            if self.atacando == True:
+                self.player.x -= 16 
+                Habilidade("Estocada").draw_skill(self.timer.atual(), self.player)
+                self.player.x += 16
+        if self.monstro.ehturno == True and self.atacando == True:
+            desenha_letras([10,0], self.monstro.nome + " usa Fogo" , 2)
+            Habilidade("Fogo").draw_skill(self.timer.atual(), self.player)
+        #self.checa_turno()
+    
+    def desenha_tela_morte(self):
+        desenha_letras([80,50], "GAME OVER", 2)
+        pyxel.blt(70, 95, 0, 16, 128, 16, 13)
+        
+    def update_tela_morte(self):
+        if pyxel.btn(pyxel.KEY_Q):
+            pyxel.quit()
+        elif pyxel.btn(pyxel.KEY_RETURN):
+            self.scene = TELA_MENU
     def update_menu(self):
         pass
         #self.desenha_menu()
-        
     
-    def update_combate(self):   
-        pass
+    def update_menu_combate(self):
+        # if pyxel.btn(pyxel.KEY_A):
+        #     self.player.ehturno = True
+        # elif pyxel.btn(pyxel.KEY_B):
+        #     self.player.ehturno = False
+        if self.seta.pos == 0 and self.player.ehturno == True:
+            if pyxel.btn(pyxel.KEY_RETURN):
+                self.menu_combate.indice = 2
+        elif self.menu_combate.indice == 2:
+            if pyxel.btn(pyxel.KEY_ESCAPE):
+                self.menu_combate.indice = 0
+        elif self.seta.pos == 3 and self.player.ehturno == True:
+            if pyxel.btn(pyxel.KEY_RETURN):
+                self.scene = TELA_MENU                
+                self.player.ehturno == False
+                return
+        if self.menu_combate.indice == 2 and self.seta.pos == 3 and self.atacando == False:
+            if pyxel.btn(pyxel.KEY_RETURN):
+                self.timer.inicia(40)
+                self.atacando = True
+    
+    def update_turno_jogador(self):
+        self.seta.update()
+        self.update_menu_combate()        
+        if self.timer.acabou() and self.atacando:
+            self.player.attack(Habilidade("Estocada"), self.monstro)
+            self.player.ehturno = False
+            self.atacando = False
+            TURNO.pop(0)
+            TURNO.append(self.player.nome)
+            self.timer.inicia(40)
+        # if not self.timer.acabou():
+        #     return
+        
+    def update_turno_monstro(self):
+        if self.timer.acabou() and self.atacando:
+            self.monstro.attack(Habilidade("Fogo"), self.player)
+            self.monstro.ehturno = False
+            TURNO.pop(0)
+            TURNO.append(self.monstro.nome)
+            self.atacando = False
+            self.timer.inicia(40)
+        if not self.timer.acabou():
+            return
+              
+            
+            
+    
+    def update_turnos(self):
+        if self.timer.acabou():            
+            if TURNO[0] == self.player.nome:
+                self.player.ehturno = True
+                self.update_turno_jogador()
+            else:
+                self.monstro.ehturno = True
+                self.atacando = True
+                self.update_turno_monstro()
+
+            
+    
+    def define_iniciativa(self):
+        TURNO.append(self.monstro.nome)
+        TURNO.append(self.player.nome)
+        self.timer.inicia(40)              
+        self.combate_fase = 1
+        
+        
+    def update_combate(self):
+        if self.combate_fase == 0:
+            self.define_iniciativa()
+        
+        elif self.combate_fase == 1:             
+            self.update_turnos()           
+        
+        elif self.combate_fase == 2:
+            self.scene = TELA_MENU
+        
+        
+        if self.player.currentlife <= 0:
+            self.player.is_alive = False
+        if self.player.is_alive == False:
+            self.scene = TELA_MORTE
+                
         #self.menu_combate.desenha()
         #pyxel.quit()
         
     def update_mundo(self):
         pyxel.quit()
-    
+        
+    # def checa_turno(self):
+    #     if self.player.ehturno == False:
+    #         pyxel.quit()
     
     
     
