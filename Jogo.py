@@ -103,6 +103,7 @@ class Npc(Character):
         self.currentlife = self.maxlife
         self.referencia = referencia
         self.iniciativa = 1 * self.atributos["Dex"]
+        self.habilidades = var.MONSTROS_HABILIDADES[nome]
         MON.append(self)
     def draw(self):
         pyxel.blt(self.x, self.y, self.img, self.u, self.v, self.w, self.h, var.TRANSPARENTE, scale=1.5)    
@@ -280,16 +281,23 @@ class Menu_combate:
         if self.comando == 0:
             if pyxel.btn(pyxel.KEY_ESCAPE):
                 self.indice = 0
-            elif seta.pos == 0 and pyxel.btn(pyxel.KEY_RETURN):
+            elif seta.pos == 0 and pyxel.btnp(pyxel.KEY_RETURN):
                 if self.indice == 0:
                     self.indice = 1
                 elif self.indice == 1:
+                    self.indice = 4
                     self.comando = 1
-            elif seta.pos == 2 and pyxel.btn(pyxel.KEY_RETURN):
+                elif self.indice == 2:
+                    self.indice = 4
+                    self.comando = 2
+            elif seta.pos == 2 and pyxel.btnp(pyxel.KEY_RETURN):
                 if self.indice == 0:
                     self.indice = 2
-                elif self.indice == 2:
-                    self.comando = 2
+                    seta.pos = 0
+                    seta.x = var.MENU_COMBATE_I[1] - 10
+                    seta.y = var.MENU_COMBATE_I[0]
+        else:   
+            return
 
     def draw(self):
         pyxel.bltm(x=0,y=var.MENU_COMBATE_BORDA_Y,tm=0,u=0,v=192,w=160,h=80)
@@ -298,7 +306,7 @@ class Menu_combate:
             self.desenha_MP()
         elif self.indice == 1:
             self.desenha_MA()
-        elif self.indice == 2 or self.indice == 5:
+        elif self.indice == 2:
             self.desenha_MS()
         elif self.indice == 3:
             self.desenha_MI()
@@ -385,8 +393,7 @@ class Jogo:
         
     def desenha_mundo(self):
         pyxel.bltm(0, 0, 0, 192, 0, var.TELA_LARGURA, var.TELA_ALTURA)
-        # desenha_letras([10,10], "monstro " + self.icones[0].nome, 2)
-        # desenha_letras([20,20], "monstro " + str(self.icones[0].emcima), 2)
+        desenha_letras([20,0], "Turno " + str(len(TURNO)), 2)
         self.desenha_icones()
         self.player.draw()
         
@@ -396,15 +403,23 @@ class Jogo:
             self.player.draw()
         desenha_criaturas(MON)
         self.menu_combate.draw()
-        desenha_letras([20,0], "A Vida do Jogador é: " + str(self.player.currentlife), 2)
-        if self.player.ehturno == True:
+        desenha_letras([30,0], "vida " + str(self.monstro[0].currentlife), 2)
+        
+        if isinstance(TURNO[0], Player):
             self.seta.draw()
             if self.atacando == True:
-                self.player.x -= 16 
-                desenha_letras([10,0], self.player.nome + " Usa " + self.player.ataque, 2)
-                Habilidade(self.player.ataque).draw_skill(self.timer.atual(), self.player)
-                self.player.x += 16
-        if isinstance(TURNO[0], Npc) and TURNO[0].ehturno == True and self.atacando == True:
+                if self.player.ataque == "Estocada Jogador":
+                    self.player.x -= 16 
+                    desenha_letras([10,0], self.player.nome + " Usa Estocada", 2)
+                    Habilidade(self.player.ataque).draw_skill(self.timer.atual(), self.player)                    
+                    self.player.x += 16
+                else:
+                    self.player.draw()
+                    desenha_letras([10,0], self.player.nome + " Usa " + self.player.ataque, 2)
+                    Habilidade(self.player.ataque).draw_skill(self.timer.atual(), self.acha_monstro())  
+            else:
+                self.player.draw()
+        elif isinstance(TURNO[0], Npc) and TURNO[0].ehturno == True and self.atacando == True:
             desenha_letras([10,0], TURNO[0].nome + str() + " usa " + TURNO[0].ataque , 2)
             if TURNO[0].ataque == "Estocada Monstro":
                 Habilidade(TURNO[0].ataque).draw_skill(self.timer.atual(), TURNO[0])
@@ -418,23 +433,33 @@ class Jogo:
         desenha_letras([80,120], "PRESSIONE ENTER PARA VOLTAR AO INICIO", 2)
     
     def desenha_tela_vitoria(self):
-        desenha_letras([60,50], "VITORIA", 2)
-        desenha_letras([70,30], "EXP GANHA: 100", 2)
-        if self.lvlup:
-            desenha_letras([90,0], self.player.nome + " Ganhou um Level", 2)
-            desenha_letras([100,0], self.player.nome + " Agora esta level: " + str(self.player.level), 2)
+        if self.jogo_fase == 3:
+            desenha_letras([60,50], "VITORIA", 2)
+            desenha_letras([60,30], "ACABOU O JOGO VAZA DAQUI", 2)
+        else:
+            desenha_letras([60,50], "VITORIA", 2)
+            desenha_letras([70,30], "EXP GANHA: 100", 2)        
+            if self.lvlup:
+                desenha_letras([90,30], self.player.nome, 2)
+                desenha_letras([100,20], "Ganhou um Level", 2)
+                desenha_letras([110,30], self.player.nome, 2)
+                desenha_letras([120,10], " Agora esta level: " + str(self.player.level), 2)
+        
+        
     def desenha_icones(self):
         for icone in self.icones:
             icone.draw()    
         
     def update(self):
         #self.background.update()
+        pyxel.mouse(True)
         if self.scene == var.TELA_MENU:
             self.update_menu()
         elif self.scene == var.TELA_MUNDO:
             self.seta = Seta()
             self.update_mundo()
         elif self.scene == var.TELA_COMBATE:
+            pyxel.mouse(False)
             self.update_combate()
         elif self.scene == var.TELA_MORTE:
             self.update_tela_morte()
@@ -451,19 +476,20 @@ class Jogo:
                 pyxel.quit()
     
     def clicou_monstro(self):
-        if self.icones[0].emcima:
+        if self.icones[self.jogo_fase].emcima:
             if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT) and self.player.nomundo:
                 return True
     
     def update_mundo(self):
        #self.player.update_mundo(self.icones, self.jogo_fase)
        self.update_icones()
-       if self.clicou_monstro():           
-           self.player.nomundo == False
-           self.player.x = 120
-           self.player.y = 80
+       if self.clicou_monstro():
+           self.player.nomundo == False           
            self.gera_monstros()
            self.define_iniciativa()
+           self.player.x = 120
+           self.player.y = 80
+           self.jogo_fase += 1
            self.scene = var.TELA_COMBATE
        elif self.jogo_fase == var.FIM:
            self.scene = var.TELA_VITORIA
@@ -473,6 +499,10 @@ class Jogo:
         for icone in self.icones:
             icone.update()
     
+    # def update_monstros(self):
+    #     for monstro in self.monstro:
+    #         monstro.update()
+    
     def update_combate(self):
         if self.combate_fase == 1:   
             cleanup_monstros(self.monstro)
@@ -481,35 +511,32 @@ class Jogo:
                 self.scene = var.TELA_MORTE
             if len(self.monstro) == 0:
                 self.update_exp()
+                TURNO.pop(0)
                 self.scene = var.TELA_VITORIA
         
         elif self.combate_fase == 2:
-            self.scene =var.TELA_MUNDO   
+            self.scene = var.TELA_MUNDO   
     
     def update_turnos(self):          
-        if isinstance(TURNO[0], Player):
-                self.player.ehturno = True
-                self.update_turno_jogador()
+        if TURNO[0] == self.player:
+            self.player.ehturno = True
+            self.update_turno_jogador()
         elif isinstance(TURNO[0], Npc):
-            if TURNO[0].currentlife <= 0:
-                TURNO.pop(0)
-            else:
-                TURNO[0].ehturno = True
-                self.update_turno_monstro(TURNO[0])   
+            TURNO[0].ehturno = True
+            self.update_turno_monstro(TURNO[0])   
     
     def update_turno_jogador(self):
-        self.seta.update()    
-        if self.menu_combate.comando in [1,2]:
+        self.seta.update()       
+        self.menu_combate.update(self.seta)                
+        if self.menu_combate.comando in [1,2] and not self.seta.selalvo:
             self.seta.x = self.monstro[0].x - 10
             self.seta.y = self.monstro[0].y - (self.monstro[0].h/2)
             self.seta.selalvo = True
             self.seta.pos = 0
-            self.timer.inicia(20)
-            self.menu_combate.indice = 5
-        if self.timer.acabou():            
-            self.menu_combate.update(self.seta) 
+            self.timer.inicia(10)
+        elif self.timer.acabou():
             if not self.atacando:
-                if pyxel.btn(pyxel.KEY_RETURN):
+                if pyxel.btnp(pyxel.KEY_RETURN) and self.menu_combate.indice == 4:
                     self.seta.selalvo = False
                     if self.menu_combate.comando == 1:                        
                         self.player.ataque = "Estocada Jogador"
@@ -531,10 +558,11 @@ class Jogo:
         
     
     def update_turno_monstro(self, monstro):
-        self.atacando = True
-        monstro.ehturno = True
-        if self.timer.acabou() and self.atacando:
-            monstro.attack(Habilidade("Fogo"), self.player)
+        if self.atacando == False:            
+            monstro.ataque = self.define_monstro_ataque(monstro)
+            self.atacando = True
+        if self.timer.acabou() and self.atacando:            
+            monstro.attack(Habilidade(monstro.ataque), self.player)            
             monstro.ehturno = False
             TURNO.pop(0)
             TURNO.append(monstro)
@@ -544,19 +572,21 @@ class Jogo:
     def update_tela_morte(self):
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
-        elif pyxel.btn(pyxel.KEY_RETURN):
+        elif pyxel.btnp(pyxel.KEY_RETURN):
             self.restart()
             self.scene = var.TELA_MENU
             
     def update_tela_vitoria(self):
-        if pyxel.btn(pyxel.KEY_RETURN):
-            self.lvlup = False
-            self.reset()
-            self.player.x = self.icones[self.jogo_fase].x
-            self.player.y = self.icones[self.jogo_fase].y
-            self.jogo_fase += 1
-            self.player.nomundo = True
-            self.scene = var.TELA_MUNDO
+        if pyxel.btnp(pyxel.KEY_RETURN):
+            if self.jogo_fase < 3:
+                self.lvlup = False
+                self.reset()
+                self.player.x = self.icones[self.jogo_fase].x
+                self.player.y = self.icones[self.jogo_fase].y
+                self.player.nomundo = True
+                self.scene = var.TELA_MUNDO
+            else:
+                self.scene = var.TELA_MENU
             
         elif pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()    
@@ -569,9 +599,17 @@ class Jogo:
             self.player.levelup()
             self.player.currentlife = self.player.maxlife
     
+    def trocou_indice(self, indice):
+        return not self.menu_combate.indice == indice
+    
+    def define_monstro_ataque(self, monstro):
+        return monstro.habilidades[pyxel.rndi(0, 1)] # retorna uma habilidade aleatória
+    
     def define_iniciativa(self):
         if self.player.iniciativa > self.monstro[0].iniciativa:
             TURNO.append(self.player)
+            for monstro in self.monstro:
+                TURNO.append(monstro)
         else:            
             for monstro in self.monstro:
                 TURNO.append(monstro)        
@@ -611,7 +649,6 @@ class Jogo:
         self.menu_combate = Menu_combate()
         self.seta = Seta()
         self.combate_fase = 0
-        #self.jogo_fase = 0
         self.timer = Temporizador()
         self.monstro = MON
         self.atacando = False        

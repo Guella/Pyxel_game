@@ -104,7 +104,7 @@ MONSTROS = {
 
 MONSTROS_HABILIDADES = {
     "Morcego": ["Arranhar", "Morder"],
-    "Goblin": ["Arranhar", "Estocada_Monstro"],
+    "Goblin": ["Arranhar", "Estocada Monstro"],
     "Dragao": ["Arranhar", "Fogo"],
     "Bezouro": ["Arranhar", "Morder"]
     }
@@ -199,23 +199,26 @@ ANIMACAO_HABS = {
         "2": [0, 3, 188, -16, 12, TRANSPARENTE],
         "3": [0, 3, 200, -16, 12, TRANSPARENTE]
         },
-    # "Morder":
-    #     {
-            
-    #     },
-    # "Arranhar":
-    #     {
-        
-    #     }
+    "Morder":
+        {
+        "1": [0, 131, 36, -16, 12, TRANSPARENTE],
+        "2": [0, 3, 188, -16, 12, TRANSPARENTE],
+        "3": [0, 3, 200, -16, 12, TRANSPARENTE]
+        },
+    "Arranhar":
+        {
+        "1": [0, 131, 36, -16, 12, TRANSPARENTE],
+        "2": [0, 3, 188, -16, 12, TRANSPARENTE],
+        "3": [0, 3, 200, -16, 12, TRANSPARENTE]
+        }
     }
 
 
 ###### ICONES MAPA MUNDI #######
 
-ICONES = {
-#    "Caverna_Entrada":[26, 152, 2, 84, 203, 10, 8, 0],
-#    "Caverna_Saída": [34, 48, 2, 96, 203, 10, 8, 0],
+ICONES = {   
     "Goblin": [45, 170, 0, 131, 36, 9, 11, TRANSPARENTE],
+    "Caverna_Entrada":[26, 152, 0, 0, 216, 10, 8, TRANSPARENTE],
     "Portao": [112, 16, 0, 56, 120, 8, 8, TRANSPARENTE],
     "Guardiao_Espectro": [110, 38, 0, 177, 97, 14, 15, TRANSPARENTE]}
 
