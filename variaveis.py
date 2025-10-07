@@ -35,9 +35,34 @@ TITULO_POS_X = TELA_LARGURA/2.3
 TURNO_X = TELA_LARGURA/3
 TURNO_Y = 20
 
+MENU_POS_Y = 80
+MENU_POS_X = TELA_LARGURA - 110
+TITULO_POS_Y = 20
+TITULO_POS_X = TELA_LARGURA - 140
+
 MENU_COMBATE_BORDA_XI = 0
 MENU_COMBATE_BORDA_XF = TELA_LARGURA
 MENU_COMBATE_BORDA_Y = TELA_ALTURA - 40
+
+
+MENU_COMBATE_I = [MENU_COMBATE_BORDA_Y + 8,MENU_COMBATE_BORDA_XI + 30] # esquerda cima
+MENU_COMBATE_II = [MENU_COMBATE_I[0] + 15, MENU_COMBATE_I[1]] # esquerda baixo
+MENU_COMBATE_III = [MENU_COMBATE_I[0], MENU_COMBATE_I[1] + 60] # direita cima
+MENU_COMBATE_IV = [MENU_COMBATE_I[0] + 15, MENU_COMBATE_I[1] + 60] # direita baixo
+
+MENU_INICIAL_TITULO = [TITULO_POS_Y, TITULO_POS_X]
+MENU_INICIAL_NOVOJG = [MENU_POS_Y, MENU_POS_X]
+MENU_INICIAL_SAIR = [MENU_INICIAL_NOVOJG[0] + 20 ,MENU_INICIAL_NOVOJG[1] + 20]
+
+
+TAMANHO_NOVOJG = [ 65,  13]
+TAMANHO_SAIR = [28,  13]
+
+RANGE_NOVOJGX = range(MENU_INICIAL_NOVOJG[1], MENU_INICIAL_NOVOJG[1] + TAMANHO_NOVOJG[0])
+RANGE_NOVOJGY = range(MENU_INICIAL_NOVOJG[0], MENU_INICIAL_NOVOJG[0] + TAMANHO_NOVOJG[1])
+RANGE_SAIRX = range(MENU_INICIAL_SAIR[1], MENU_INICIAL_SAIR[1] + TAMANHO_SAIR[0])
+RANGE_SAIRY = range(MENU_INICIAL_SAIR[0], MENU_INICIAL_SAIR[0] + TAMANHO_SAIR[1])
+
 
 DANO_TIPO = {"Fisico", "magico", "elemental"}
 
@@ -71,15 +96,15 @@ ANIMACAO_PARADO = {
 #### COORDENADA DO DESENHO DOS MONSTROS ####
 
 MONSTROS = {
-    "Rato": [0, 131, 17, 10, 12, TRANSPARENTE],
+    "Morcego": [0, 193, 70, 14, 6, TRANSPARENTE],
     "Goblin": [0, 131, 36, 9, 11, TRANSPARENTE],
     "Bezouro": [0, 129, 81 , 13, 13, TRANSPARENTE],
     "Dragao": [0, 192, 128, 16, 16, TRANSPARENTE]
     }
 
 MONSTROS_HABILIDADES = {
-    "Rato": ["Arranhar", "Morder"],
-    "Goblin": ["Arranhar", "Escotada"],
+    "Morcego": ["Arranhar", "Morder"],
+    "Goblin": ["Arranhar", "Estocada_Monstro"],
     "Dragao": ["Arranhar", "Fogo"],
     "Bezouro": ["Arranhar", "Morder"]
     }
@@ -95,7 +120,7 @@ MONSTROS_STATS = {
             "Dex": 20,
             "EXP": 100
         },
-    "Rato": 
+    "Morcego": 
         {
             "For": 3,
             "Int": 1,
@@ -129,7 +154,12 @@ HABILIDADES = {
         "dano": 100,
         "atributo": "Int"
         },
-    "Estocada": {
+    "Estocada Monstro": {
+        "tipo": "fisico",
+        "dano": 30,
+        "atributo": "For"
+        },
+    "Estocada Jogador": {
         "tipo": "fisico",
         "dano": 30,
         "atributo": "For"
@@ -137,13 +167,17 @@ HABILIDADES = {
     "Arranhar": {
         "tipo": "fisico",
         "dano": 20,
-        "atributo": "Dex"},
+        "atributo": "Dex"
+        },
     "Morder": {
         "tipo": "fisico",
         "dano": 25,
-        "atributo": "For"},
+        "atributo": "For"
+        }
     }
 
+
+FIM = 10000
 ##### ANIMACOES HABILIDADES #####
 
 
@@ -153,18 +187,26 @@ ANIMACAO_HABS = {
         "2": [0, 96, 72, 16, 16, TRANSPARENTE],
         "3": [0, 80, 72, 16, 16, TRANSPARENTE]
         },
-    "Estocada_Jogador":
+    "Estocada Jogador":
         {
         "1": [0, 40, 0, -16, 8, TRANSPARENTE],
         "2": [0, 0, 168, -16, 8, TRANSPARENTE],
         "3": [0, 0, 176, -16, 8, TRANSPARENTE]
         },
-    "Estocada_Monstro":
+    "Estocada Monstro":
         {
-        "1": [0, 40, 0, -16, 8, TRANSPARENTE],
-        "2": [0, 0, 168, -16, 8, TRANSPARENTE],
-        "3": [0, 0, 176, -16, 8, TRANSPARENTE]
-        }        
+        "1": [0, 131, 36, -16, 12, TRANSPARENTE],
+        "2": [0, 3, 188, -16, 12, TRANSPARENTE],
+        "3": [0, 3, 200, -16, 12, TRANSPARENTE]
+        },
+    # "Morder":
+    #     {
+            
+    #     },
+    # "Arranhar":
+    #     {
+        
+    #     }
     }
 
 
@@ -173,8 +215,9 @@ ANIMACAO_HABS = {
 ICONES = {
 #    "Caverna_Entrada":[26, 152, 2, 84, 203, 10, 8, 0],
 #    "Caverna_Saída": [34, 48, 2, 96, 203, 10, 8, 0],
-    "Portão": [112, 16, 0, 56, 120, 8, 8, TRANSPARENTE],
-    "Guardião Espectro": [110, 38, 0, 177, 97, 14, 15, TRANSPARENTE]}
+    "Goblin": [45, 170, 0, 131, 36, 9, 11, TRANSPARENTE],
+    "Portao": [112, 16, 0, 56, 120, 8, 8, TRANSPARENTE],
+    "Guardiao_Espectro": [110, 38, 0, 177, 97, 14, 15, TRANSPARENTE]}
 
 
 ##### coordenada desenho da SETA ######
