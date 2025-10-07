@@ -1,7 +1,5 @@
 import variaveis as var
 import pyxel
-from variaveis import MENU_LETRAS
-from variaveis import ICONES
 TELA_LARGURA = 160
 TELA_ALTURA = 220
 TITULO = "Aventuras de Outrora"

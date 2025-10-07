@@ -10,8 +10,6 @@ import pyxel
 # sys.path.append("C:/Users/salma/Documents/FURG/Algoritmos/Pyxel_game/")
 # sys.path.append("G:/Outros computadores/Meu computador/FURG/Algoritmos/Pyxel_game")
 import variaveis as var
-import time
-
 #PER = []
 MON = []
 TURNO = []
@@ -384,7 +382,7 @@ class Character:
         
             
 class Player(Character):
-    def __init__(self, nome, x, y, classe, iniciativa, w = var.CHARACTER_W, h = var.CHARACTER_H):
+    def __init__(self, nome, x, y, classe, iniciativa, w = var.CHAR_W, h = var.CHAR_H):
         super().__init__(nome, x, y, iniciativa)
         self.classe = classe
         self.w = w
