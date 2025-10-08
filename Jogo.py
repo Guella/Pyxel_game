@@ -586,6 +586,7 @@ class Jogo:
                 self.player.nomundo = True
                 self.scene = var.TELA_MUNDO
             else:
+                self.restart()
                 self.scene = var.TELA_MENU
             
         elif pyxel.btn(pyxel.KEY_Q):
