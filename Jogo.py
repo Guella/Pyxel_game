@@ -204,7 +204,7 @@ class Seta:
             self.x = MON[0].x - 10
             self.y = MON[0].y - (MON[0].h/2)
             return
-        if pyxel.btn(pyxel.KEY_DOWN):
+        if pyxel.btnp(pyxel.KEY_DOWN):
             if self.pos < (len(MON) - 1):
                 self.x = MON[self.pos+1].x - 10
                 self.y = MON[self.pos+1].y - round((MON[1].h/2))
@@ -213,7 +213,7 @@ class Seta:
                 self.x = MON[0].x - 5
                 self.y = MON[0].y - (MON[1].h/2)
                 self.pos = 0
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btnp(pyxel.KEY_UP):
             if self.pos == 0:
                 self.x = MON[len(MON) - 1].x - 10
                 self.y = MON[len(MON) - 1].y - round((MON[1].h/2))
@@ -223,12 +223,12 @@ class Seta:
                 self.y = MON[self.pos - 1].y - round((MON[1].h/2))
                 self.pos -= 1
                 
-        #if pyxel.btn    
+        #if pyxel.btnp    
         pass
         
     
     def move_seta(self):
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btnp(pyxel.KEY_UP):
             if self.pos == 2:
                 self.pos = 0
                 self.x = var.MENU_COMBATE_I[1] - 10
@@ -237,7 +237,7 @@ class Seta:
                 self.pos = 1
                 self.x = var.MENU_COMBATE_III[1] - 10
                 self.y = var.MENU_COMBATE_III[0]
-        elif pyxel.btn(pyxel.KEY_DOWN):
+        elif pyxel.btnp(pyxel.KEY_DOWN):
             if self.pos == 0:
                 self.pos = 2
                 self.x = var.MENU_COMBATE_II[1] - 10
@@ -246,7 +246,7 @@ class Seta:
                 self.pos = 3
                 self.x = var.MENU_COMBATE_IV[1] - 10
                 self.y = var.MENU_COMBATE_IV[0]
-        elif pyxel.btn(pyxel.KEY_LEFT):
+        elif pyxel.btnp(pyxel.KEY_LEFT):
             if self.pos == 1:
                 self.pos = 0
                 self.x = var.MENU_COMBATE_I[1] - 10
@@ -255,7 +255,7 @@ class Seta:
                 self.pos = 2
                 self.x = var.MENU_COMBATE_II[1] - 10
                 self.y = var.MENU_COMBATE_II[0]
-        elif pyxel.btn(pyxel.KEY_RIGHT):
+        elif pyxel.btnp(pyxel.KEY_RIGHT):
             if self.pos == 0:
                 self.pos = 1
                 self.x = var.MENU_COMBATE_III[1] - 10
@@ -435,7 +435,7 @@ class Jogo:
     def desenha_tela_vitoria(self):
         if self.jogo_fase == 3:
             desenha_letras([60,50], "VITORIA", 2)
-            desenha_letras([60,30], "ACABOU O JOGO VAZA DAQUI", 2)
+            desenha_letras([80,10], "ACABOU O JOGO VAZA DAQUI", 2)
         else:
             desenha_letras([60,50], "VITORIA", 2)
             desenha_letras([70,30], "EXP GANHA: 100", 2)        
@@ -581,8 +581,8 @@ class Jogo:
             if self.jogo_fase < 3:
                 self.lvlup = False
                 self.reset()
-                self.player.x = self.icones[self.jogo_fase].x
-                self.player.y = self.icones[self.jogo_fase].y
+                self.player.x = self.icones[self.jogo_fase - 1].x
+                self.player.y = self.icones[self.jogo_fase - 1].y
                 self.player.nomundo = True
                 self.scene = var.TELA_MUNDO
             else:
@@ -632,7 +632,7 @@ class Jogo:
     def restart(self):
         self.scene = var.TELA_MENU
         #self.background = Background()
-        self.player = Player("Gauderio", "Guerreiro")
+        self.player = Player("Gauderio", "Guerreiro", 120, 80)
         self.monstro = MON
         self.menu_combate = Menu_combate()
         self.icones = self.gera_icones()

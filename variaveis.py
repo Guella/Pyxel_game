@@ -72,7 +72,7 @@ DANO_TIPO = {"Fisico", "magico", "elemental"}
 
  
 PLAYER_STATS = {
-    "For": 100,
+    "For": 1000,
     "Int": 2,
     "Con": 15,
     "Dex": 10
